@@ -37,6 +37,11 @@ namespace przykladowyKolos
                 app.UseDeveloperExceptionPage();
             }
 
+            app.Use(async (context, c) =>
+            {
+                context.Response.Headers.Add("Index", "s18849");
+                await c.Invoke();
+            });
             app.UseRouting();
 
             app.UseAuthorization();

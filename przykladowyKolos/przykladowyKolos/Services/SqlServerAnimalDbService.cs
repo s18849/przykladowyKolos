@@ -25,9 +25,10 @@ namespace przykladowyKolos.Services
                 com.Connection = con;
 
                
+              
+                 com.CommandText = "select a.IdAnimal, a.Name, a.Type, a.AdmissionDate, o.LastName from Animal a inner join Owner o on o.IdOwner = a.IdOwner order by " +orderBy;
                
-                 com.CommandText = "select a.IdAnimal, a.Name, a.Type, a.AdmissionDate, o.LastName from Animal a inner join Owner o on o.IdOwner = a.IdOwner order by @orderBy";
-                com.Parameters.AddWithValue("orderBy", orderBy);
+               
 
 
                 using (var dr = com.ExecuteReader())
