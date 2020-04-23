@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using przykladowyKolos.DTOs.Requests;
 using przykladowyKolos.DTOs.Responses;
 using przykladowyKolos.Services;
 using System;
@@ -37,6 +38,21 @@ namespace przykladowyKolos.Controllers
                 return BadRequest("Nie ma takiego pola w bazie");
             }
             
+        }
+
+        [HttpPost]
+        public IActionResult  AddAnimals(AddAnimalRequest animal) {
+            try
+            {
+                _service.AddAnimal(animal);
+            }
+            catch (Exception)
+            {
+                return NotFound("Zadanie nie zawiera wszystkich danych");
+
+            }
+
+            return Ok();
         }
         
     }

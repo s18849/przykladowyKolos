@@ -1,4 +1,5 @@
-﻿using przykladowyKolos.DTOs.Responses;
+﻿using przykladowyKolos.DTOs.Requests;
+using przykladowyKolos.DTOs.Responses;
 using przykladowyKolos.Models;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace przykladowyKolos.Services
         private const string ConString = "Data Source=db-mssql;Initial Catalog=s18849;Integrated Security=True";
         public List<GetAnimalResponse> GetAnimal(string orderBy)
         {
-            if(orderBy == null)
+            if (orderBy == null)
             {
                 orderBy = "AdmissionDate";
             }
@@ -24,11 +25,11 @@ namespace przykladowyKolos.Services
                 con.Open();
                 com.Connection = con;
 
-               
-              
-                 com.CommandText = "select a.IdAnimal, a.Name, a.Type, a.AdmissionDate, o.LastName from Animal a inner join Owner o on o.IdOwner = a.IdOwner order by " +orderBy;
-               
-               
+
+
+                com.CommandText = "select a.IdAnimal, a.Name, a.Type, a.AdmissionDate, o.LastName from Animal a inner join Owner o on o.IdOwner = a.IdOwner order by " + orderBy;
+
+
 
 
                 using (var dr = com.ExecuteReader())
@@ -47,5 +48,47 @@ namespace przykladowyKolos.Services
             }
             return list;
         }
+
+        public void AddAnimal(AddAnimalRequest request)
+        {
+            using (var con = new SqlConnection(ConString))
+            using (var com = new SqlCommand())
+            {
+                com.Connection = con;
+                con.Open();
+                var tran = con.BeginTransaction();
+                com.Transaction = tran;
+                try
+                {
+                    com.CommandText = "select IdOwner from Owner where IdOwner=@owner";
+                    com.Parameters.AddWithValue("owner", request.IdOwner);
+
+                    var dr = com.ExecuteReader();
+                    if (!dr.Read())
+                    {
+                        dr.Close();
+                        tran.Rollback();
+                        throw new ArgumentException();
+                    }
+
+                    com.CommandText = "select IdProcedure from Procedures where IdProcedure=@procedure";
+                    com.Parameters.AddWithValue("procedure", request.IdProcedure);
+                    dr.Close();
+                    var dr2 = com.ExecuteReader();
+                    if (!dr2.Read())
+                    {
+                        dr2.Close();
+                        tran.Rollback();
+                        throw new ArgumentException();
+                    }
+
+                }
+                catch (SqlException exc)
+                {
+
+                }
+            }
+        }
     }
 }
+
